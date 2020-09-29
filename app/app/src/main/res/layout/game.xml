@@ -1,102 +1,173 @@
 <?xml version="1.0" encoding="utf-8"?>
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
-    <TextView
-        android:id="@+id/playTextView"
+    <androidx.constraintlayout.widget.Guideline
+        android:id="@+id/guide_vertical_1"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="50dp"
-        android:text="TextView"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        android:orientation="vertical"
+        app:layout_constraintGuide_percent="0.15" />
+
+    <androidx.constraintlayout.widget.Guideline
+        android:id="@+id/guide_vertical_2"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        app:layout_constraintGuide_percent="0.85" />
+
+    <androidx.constraintlayout.widget.Guideline
+        android:id="@+id/guide_horizontal_1"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        app:layout_constraintGuide_percent="0.10" />
+
+    <androidx.constraintlayout.widget.Guideline
+        android:id="@+id/guide_horizontal_2"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        app:layout_constraintGuide_percent="0.20" />
+
+    <androidx.constraintlayout.widget.Guideline
+        android:id="@+id/guide_horizontal_3"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        app:layout_constraintGuide_percent="0.30" />
+
+    <androidx.constraintlayout.widget.Guideline
+        android:id="@+id/guide_horizontal_4"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        app:layout_constraintGuide_percent="0.40" />
+
+    <androidx.constraintlayout.widget.Guideline
+        android:id="@+id/guide_horizontal_5"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        app:layout_constraintGuide_percent="0.50" />
+
+    <androidx.constraintlayout.widget.Guideline
+        android:id="@+id/guide_horizontal_6"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        app:layout_constraintGuide_percent="0.60" />
+
+    <androidx.constraintlayout.widget.Guideline
+        android:id="@+id/guide_horizontal_7"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        app:layout_constraintGuide_percent="0.70" />
+
+    <androidx.constraintlayout.widget.Guideline
+        android:id="@+id/guide_horizontal_8"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        app:layout_constraintGuide_percent="0.80" />
+
+    <TextView
+        android:id="@+id/playerTextView"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:text="Jogador"
+        android:textAlignment="center"
+        android:textSize="24sp"
+        app:layout_constraintEnd_toEndOf="@id/guide_vertical_2"
+        app:layout_constraintStart_toStartOf="@id/guide_vertical_1"
+        app:layout_constraintTop_toTopOf="@id/guide_horizontal_1"
+        app:layout_constraintWidth_percent="0.70" />
 
     <TextView
         android:id="@+id/cepTextView"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="50dp"
-        android:text="TextView"
-        app:layout_constraintBottom_toBottomOf="@+id/playTextView"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent" />
+        android:text="12345-"
+        android:textSize="20sp"
+        app:layout_constraintStart_toStartOf="@id/guide_vertical_1"
+        app:layout_constraintTop_toBottomOf="@id/guide_horizontal_2" />
 
     <EditText
         android:id="@+id/digitsCepEditText"
-        android:layout_width="wrap_content"
+        android:layout_width="50dp"
         android:layout_height="wrap_content"
-        android:layout_marginTop="50dp"
         android:ems="10"
-        android:inputType="textPersonName"
-        android:text="Name"
+        android:inputType="number"
+        android:textSize="20sp"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/cepTextView" />
+        app:layout_constraintEnd_toStartOf="@id/guide_vertical_2"
+        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintTop_toBottomOf="@id/guide_horizontal_2" />
 
     <TextView
-        android:id="@+id/public_placeTextView"
-        android:layout_width="wrap_content"
+        android:id="@+id/publicPlaceTextView"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_marginTop="50dp"
         android:text="TextView"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/digitsCepEditText" />
+        android:textAlignment="textStart"
+        app:layout_constraintEnd_toEndOf="@id/guide_vertical_2"
+        app:layout_constraintStart_toStartOf="@id/guide_vertical_1"
+        app:layout_constraintTop_toBottomOf="@id/guide_horizontal_3"
+        app:layout_constraintWidth_percent="0.70" />
 
     <TextView
         android:id="@+id/cityTextView"
-        android:layout_width="wrap_content"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_marginTop="50dp"
         android:text="TextView"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/public_placeTextView" />
+        app:layout_constraintEnd_toEndOf="@id/guide_vertical_2"
+        app:layout_constraintStart_toStartOf="@id/guide_vertical_1"
+        app:layout_constraintTop_toBottomOf="@id/guide_horizontal_4"
+        app:layout_constraintWidth_percent="0.70" />
 
     <TextView
         android:id="@+id/statusTextView"
-        android:layout_width="wrap_content"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_marginTop="50dp"
         android:text="TextView"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/cityTextView" />
+        app:layout_constraintEnd_toEndOf="@id/guide_vertical_2"
+        app:layout_constraintStart_toStartOf="@id/guide_vertical_1"
+        app:layout_constraintTop_toBottomOf="@id/guide_horizontal_5"
+        app:layout_constraintWidth_percent="0.70" />
 
     <TextView
         android:id="@+id/pointsTextView"
-        android:layout_width="wrap_content"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_marginTop="50dp"
         android:text="TextView"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/statusTextView" />
+        app:layout_constraintEnd_toEndOf="@id/guide_vertical_2"
+        app:layout_constraintStart_toStartOf="@id/guide_vertical_1"
+        app:layout_constraintTop_toBottomOf="@id/guide_horizontal_6"
+        app:layout_constraintWidth_percent="0.70" />
 
     <TextView
         android:id="@+id/attempsTextView"
-        android:layout_width="wrap_content"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_marginTop="50dp"
         android:text="TextView"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/pointsTextView" />
+        app:layout_constraintEnd_toEndOf="@id/guide_vertical_2"
+        app:layout_constraintStart_toStartOf="@id/guide_vertical_1"
+        app:layout_constraintTop_toBottomOf="@id/guide_horizontal_7"
+        app:layout_constraintWidth_percent="0.70" />
 
     <Button
         android:id="@+id/playButton"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="50dp"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
         android:text="Tentar"
-        android:textColor="#3F51B5"
-        android:textSize="24sp"
+        android:textSize="18sp"
         app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHeight_percent="0.10"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/attempsTextView" />
+        app:layout_constraintTop_toBottomOf="@+id/guide_horizontal_8"
+        app:layout_constraintWidth_percent="0.70" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
