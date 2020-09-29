@@ -13,10 +13,10 @@ import androidx.appcompat.app.AppCompatActivity;
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
+import java.net.ServerSocket;
 import java.net.Socket;
 
 import tesky.cep.R;
-import tesky.cep.model.SocketHandler;
 
 public class Game extends AppCompatActivity {
     static int attemps = 0;
@@ -26,8 +26,10 @@ public class Game extends AppCompatActivity {
     String cepString;
     String character;
     String opponentCharacter;
+    String ipAddress;
+    String type;
     Socket socket;
-    SocketHandler socketHandler;
+    ServerSocket serverSocket;
     DataInputStream socketInput;
     DataOutputStream socketOutput;
 
@@ -51,19 +53,18 @@ public class Game extends AppCompatActivity {
         if (params != null) {
             cepString = params.getString("cep");
             character = params.getString("character");
-            socketHandler = (SocketHandler) params.getSerializable("socket");
+            ipAddress = params.getString("ip");
+            type = params.getString("type");
+        }
+
+        if (type.equals("server")) {
+            connectServer();
+        } else {
+            connectClient();
         }
 
         if (character.equals("Morlock")) opponentCharacter = "Eloi";
         else opponentCharacter = "Morlock";
-
-        try {
-            socket = socketHandler.getSocket();
-            socketInput = new DataInputStream(socket.getInputStream());
-            socketOutput = new DataOutputStream(socket.getOutputStream());
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
 
         cepDigits = Integer.parseInt(cepString.split("-")[1]);
         cepDigits = Integer.parseInt(cepString.split("-")[0] + cepString.split("-")[1]);
@@ -80,8 +81,6 @@ public class Game extends AppCompatActivity {
 
         cepTextView.setText("CEP: " + cepString.split("-")[0] + "-");
         publicPlaceTextView.setText("Personagem: " + character);
-
-        play();
 
         playButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -151,5 +150,70 @@ public class Game extends AppCompatActivity {
             }
         });
         thread.start();
+    }
+
+    public void connectServer() {
+        Thread t = new Thread(new Runnable() {
+            @Override
+            public void run() {
+                connectServerCode();
+            }
+        });
+        t.start();
+    }
+
+    public void connectServerCode() {
+        try {
+            serverSocket = new ServerSocket(9090);
+            Socket connectionSocket = serverSocket.accept();
+
+            socketInput = new DataInputStream(connectionSocket.getInputStream());
+            socketOutput = new DataOutputStream(connectionSocket.getOutputStream());
+
+            try {
+                socketOutput.writeUTF("ConnectServerOK");
+                socketOutput.flush();
+
+                while (socketInput != null) {
+                    String result = socketInput.readUTF();
+                    if (result.equals("ConnectClientOK")) {
+                        play();
+                        Log.v("ConnectServer", "Connect Ok ");
+                    }
+                }
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+
+        } catch (Exception ex) {
+            ex.printStackTrace();
+        }
+    }
+
+    public void connectClient() {
+        Thread t = new Thread(new Runnable() {
+            @Override
+            public void run() {
+                try {
+                    socket = new Socket(ipAddress, 9090);
+
+                    socketOutput = new DataOutputStream(socket.getOutputStream());
+                    socketInput = new DataInputStream(socket.getInputStream());
+
+                    while (socketInput != null) {
+                        String result = socketInput.readUTF();
+                        if (result.equals("ConnectServerOK")) {
+                            socketOutput.writeUTF("ConnectClientOK");
+                            socketOutput.flush();
+                            play();
+                            Log.v("ConnectClient", "Connect Ok ");
+                        }
+                    }
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            }
+        });
+        t.start();
     }
 }

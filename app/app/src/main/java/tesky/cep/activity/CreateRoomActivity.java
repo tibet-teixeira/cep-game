@@ -11,19 +11,13 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
-import android.widget.EditText;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
-import android.widget.TextView;
 
 import androidx.appcompat.app.AppCompatActivity;
 
-import java.io.BufferedReader;
-import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
-import java.net.ServerSocket;
-import java.net.Socket;
 
 import tesky.cep.R;
 
@@ -70,12 +64,12 @@ public class CreateRoomActivity extends AppCompatActivity {
                             .getSystemService(WIFI_SERVICE);
 
                     String macAddress = wifiManager.getConnectionInfo().getMacAddress();
-                    Log.v("PDM", "Wifi - MAC:" + macAddress);
+                    Log.v("CreateRoom", "Wifi - MAC:" + macAddress);
 
                     int ip = wifiManager.getConnectionInfo().getIpAddress();
                     String ipAddress = String.format("%d.%d.%d.%d", (ip & 0xff), (ip >> 8 & 0xff), (ip >> 16 & 0xff), (ip >> 24 & 0xff));
 
-                    Log.v("PDM", "Wifi - IP:" + ipAddress);
+                    Log.v("CreateRoom", "Wifi - IP:" + ipAddress);
 
                     Intent intent = new Intent(CreateRoomActivity.this, WaitingPlayer.class);
                     intent.putExtra("ip", ipAddress);

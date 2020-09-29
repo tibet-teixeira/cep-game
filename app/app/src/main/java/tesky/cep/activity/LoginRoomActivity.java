@@ -2,10 +2,10 @@ package tesky.cep.activity;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
-import android.widget.TextView;
 
 import androidx.appcompat.app.AppCompatActivity;
 
@@ -14,7 +14,6 @@ import java.io.DataOutputStream;
 import java.net.Socket;
 
 import tesky.cep.R;
-import tesky.cep.model.SocketHandler;
 
 
 public class LoginRoomActivity extends AppCompatActivity {
@@ -39,13 +38,14 @@ public class LoginRoomActivity extends AppCompatActivity {
         buttonLoginRoom.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                coonnect();
+                connect();
             }
         });
     }
 
-    public void coonnect() {
+    public void connect() {
         final String ip = editTextCodeRoom.getText().toString();
+        Log.v("ConnectClient", "IP = " + ip);
 
         Thread t = new Thread(new Runnable() {
             @Override
@@ -58,15 +58,22 @@ public class LoginRoomActivity extends AppCompatActivity {
 
                     while (socketInput != null) {
                         String result = socketInput.readUTF();
-                        if (result.contains("CEP")) cep = result.split(":")[1];
+                        if (result.contains("CEP")) {
+                            cep = result.split(":")[1];
+                            Log.v("ConnectClient", "CEP = " + cep);
+                        }
 
-                        if (result.contains("CHARACTER")) character = result.split(":")[1];
+                        if (result.contains("CHARACTER")) {
+                            character = result.split(":")[1];
+                            Log.v("ConnectClient", "CHARACTER = " + character);
+                        }
 
                         if ((cep != null) && (character != null)) {
                             Intent intent = new Intent(LoginRoomActivity.this, Game.class);
                             intent.putExtra("cep", cep);
+                            intent.putExtra("ip", ip);
                             intent.putExtra("character", character);
-                            intent.putExtra("socket", new SocketHandler(clientSocket));
+                            intent.putExtra("type", "client");
                             startActivity(intent);
                             finish();
                         }

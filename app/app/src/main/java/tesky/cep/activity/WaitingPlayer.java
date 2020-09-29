@@ -24,7 +24,6 @@ import java.util.Random;
 import javax.net.ssl.HttpsURLConnection;
 
 import tesky.cep.R;
-import tesky.cep.model.SocketHandler;
 
 public class WaitingPlayer extends AppCompatActivity {
     private String cep;
@@ -104,7 +103,7 @@ public class WaitingPlayer extends AppCompatActivity {
 
                 this.cep = cep;
 
-                Log.v("[DEBUG]", "CEP = " + cep
+                Log.v("WaitingPlayer", "CEP = " + cep
                         + "\nLOGRADOURO = " + logradouro
                         + "\nBAIRO = " + bairro
                         + "\nCIDADE = " + cidade);
@@ -129,7 +128,7 @@ public class WaitingPlayer extends AppCompatActivity {
             welcomeSocket = new ServerSocket(9090);
             Socket connectionSocket = welcomeSocket.accept();
 
-            Log.v("[DEBUG]", "Device connected");
+            Log.v("WaitingPlayer", "Device connected");
 
             fromClient = new DataInputStream(connectionSocket.getInputStream());
             socketOutput = new DataOutputStream(connectionSocket.getOutputStream());
@@ -154,8 +153,9 @@ public class WaitingPlayer extends AppCompatActivity {
 
             Intent intent = new Intent(WaitingPlayer.this, Game.class);
             intent.putExtra("cep", this.cep);
+            intent.putExtra("ip", this.ipAddress);
             intent.putExtra("character", this.character);
-            intent.putExtra("socket", new SocketHandler(connectionSocket));
+            intent.putExtra("type", "server");
             startActivity(intent);
             finish();
         } catch (Exception ex) {
