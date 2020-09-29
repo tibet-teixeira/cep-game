@@ -1,3 +1,5 @@
 <resources>
-    <string name="app_name">CEP Game</string>
+    <string name="app_name">Jogo do CEP</string>
+    <string name="crateRoom">Criar sala</string>
+    <string name="loginRoom">Entrar em uma sala</string>
 </resources>
