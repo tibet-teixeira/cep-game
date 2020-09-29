@@ -12,6 +12,8 @@ import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.RadioButton;
+import android.widget.RadioGroup;
 import android.widget.TextView;
 
 import androidx.appcompat.app.AppCompatActivity;
@@ -27,26 +29,35 @@ import tesky.cep.R;
 
 
 public class CreateRoomActivity extends AppCompatActivity {
-    TextView tvStatus;
     DataOutputStream socketOutput;
+
+    Button buttonCreateMatch;
+    RadioButton radioCharacterButton;
+    RadioGroup radioCharacterGroup;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.create_room);
 
-        ligarServidor();
+        radioCharacterGroup = findViewById(R.id.radioCharacterGroup);
+        buttonCreateMatch = findViewById(R.id.buttonCreateMatch);
 
-        tvStatus = findViewById(R.id.textView);
-
+        buttonCreateMatch.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                int selectedId = radioCharacterGroup.getCheckedRadioButtonId();
+                radioCharacterButton = (RadioButton) findViewById(selectedId);
+                connectServer();
+            }
+        });
     }
 
-    public void ligarServidor() {
+    public void connectServer() {
         ConnectivityManager connManager;
         connManager = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
 
         Network[] networks = connManager.getAllNetworks();
-
 
         for (Network minhaRede : networks) {
             NetworkInfo netInfo = connManager.getNetworkInfo(minhaRede);
@@ -65,9 +76,10 @@ public class CreateRoomActivity extends AppCompatActivity {
                     String ipAddress = String.format("%d.%d.%d.%d", (ip & 0xff), (ip >> 8 & 0xff), (ip >> 16 & 0xff), (ip >> 24 & 0xff));
 
                     Log.v("PDM", "Wifi - IP:" + ipAddress);
-                    tvStatus.setText("IP da Sala:" + ipAddress);
 
                     Intent intent = new Intent(CreateRoomActivity.this, WaitingPlayer.class);
+                    intent.putExtra("ip", ipAddress);
+                    intent.putExtra("character", radioCharacterButton.getText().toString());
                     startActivity(intent);
                     finish();
                 }
@@ -75,9 +87,7 @@ public class CreateRoomActivity extends AppCompatActivity {
         }
     }
 
-
-
-    public void desconectar() {
+    public void shutdownServer() {
         try {
             if (socketOutput != null) {
                 socketOutput.close();

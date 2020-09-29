@@ -1,5 +1,6 @@
 package tesky.cep.activity;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
@@ -8,66 +9,43 @@ import android.widget.TextView;
 
 import androidx.appcompat.app.AppCompatActivity;
 
-import java.io.BufferedReader;
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
-import java.io.IOException;
 import java.net.Socket;
 
 import tesky.cep.R;
+import tesky.cep.model.SocketHandler;
 
 
 public class LoginRoomActivity extends AppCompatActivity {
-    TextView tvStatus, tvNumPìngsPongs;
+    String cep = null;
+    String character = null;
     Socket clientSocket;
-    DataOutputStream socketOutput;
-    BufferedReader socketEntrada;
     DataInputStream socketInput;
-    Button btConectar;
-    Button btPing;
-    EditText edtIp;
-    long pings, pongs;
+    DataOutputStream socketOutput;
+
+    Button buttonLoginRoom;
+    EditText editTextCodeRoom;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.login_room);
-        tvStatus = findViewById(R.id.tvStatusClient);
-        btConectar = findViewById(R.id.btConectar);
-        btPing = findViewById(R.id.btPingC);
-        tvNumPìngsPongs = findViewById(R.id.tvNumPP_C);
-        edtIp = findViewById(R.id.edtIP);
 
+        buttonLoginRoom = findViewById(R.id.buttonLoginRoom);
+        editTextCodeRoom = findViewById(R.id.editTextCodeRoom);
 
-        btPing.setOnClickListener(new View.OnClickListener() {
+        buttonLoginRoom.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                mandarPing();
-            }
-        });
-
-        btConectar.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                conectar();
+                coonnect();
             }
         });
     }
 
-    public void atualizarStatus() {
-        //Método que vai atualizar os pings e pongs, usando post para evitar problemas com as threads
-        tvNumPìngsPongs.post(new Runnable() {
-            @Override
-            public void run() {
-                tvNumPìngsPongs.setText("Enviados " + pings + " Pings e " + pongs + " Pongs");
-            }
-        });
-    }
-
-    public void conectar() {
-        final String ip = edtIp.getText().toString();
-        tvStatus.setText("Conectando em " + ip + ":9090");
-
+    public void coonnect() {
+        final String ip = editTextCodeRoom.getText().toString();
 
         Thread t = new Thread(new Runnable() {
             @Override
@@ -75,59 +53,25 @@ public class LoginRoomActivity extends AppCompatActivity {
                 try {
                     clientSocket = new Socket(ip, 9090);
 
-                    tvStatus.post(new Runnable() {
-                        @Override
-                        public void run() {
-                            tvStatus.setText("Conectado com " + ip + ":9090");
-                        }
-                    });
-                    socketOutput =
-                            new DataOutputStream(clientSocket.getOutputStream());
-                    socketInput =
-                            new DataInputStream(clientSocket.getInputStream());
+                    socketOutput = new DataOutputStream(clientSocket.getOutputStream());
+                    socketInput = new DataInputStream(clientSocket.getInputStream());
+
                     while (socketInput != null) {
                         String result = socketInput.readUTF();
-                        if (result.compareTo("PING") == 0) {
-                            //enviar Pong
-                            pongs++;
-                            socketOutput.writeUTF("PONG");
-                            socketOutput.flush();
-                            atualizarStatus();
+                        if (result.contains("CEP")) cep = result.split(":")[1];
+
+                        if (result.contains("CHARACTER")) character = result.split(":")[1];
+
+                        if ((cep != null) && (character != null)) {
+                            Intent intent = new Intent(LoginRoomActivity.this, Game.class);
+                            intent.putExtra("cep", cep);
+                            intent.putExtra("character", character);
+                            intent.putExtra("socket", new SocketHandler(clientSocket));
+                            startActivity(intent);
+                            finish();
                         }
                     }
-
-
                 } catch (Exception e) {
-
-                    tvStatus.post(new Runnable() {
-                        @Override
-                        public void run() {
-                            tvStatus.setText("Erro na conexão com " + ip + ":9090");
-                        }
-                    });
-
-                    e.printStackTrace();
-                }
-            }
-        });
-        t.start();
-    }
-
-    public void mandarPing() {
-        Thread t = new Thread(new Runnable() {
-            @Override
-            public void run() {
-                try {
-                    if (socketOutput != null) {
-                        socketOutput.writeUTF("PING");
-                        socketOutput.flush();
-                        pings++;
-                        atualizarStatus();
-                    } else {
-                        tvStatus.setText("Cliente Desconectado");
-                        btConectar.setEnabled(true);
-                    }
-                } catch (IOException e) {
                     e.printStackTrace();
                 }
             }

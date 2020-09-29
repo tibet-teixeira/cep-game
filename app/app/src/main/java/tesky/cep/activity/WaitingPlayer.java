@@ -3,6 +3,7 @@ package tesky.cep.activity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
+import android.widget.TextView;
 
 import androidx.appcompat.app.AppCompatActivity;
 
@@ -12,6 +13,7 @@ import org.json.JSONObject;
 import java.io.BufferedReader;
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
+import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.ServerSocket;
 import java.net.Socket;
@@ -22,32 +24,37 @@ import java.util.Random;
 import javax.net.ssl.HttpsURLConnection;
 
 import tesky.cep.R;
+import tesky.cep.model.SocketHandler;
 
 public class WaitingPlayer extends AppCompatActivity {
-    private int cep;
-    private int cepDigits;
+    private String cep;
+    String ipAddress;
+    String character;
 
     ServerSocket welcomeSocket;
     DataOutputStream socketOutput;
     DataInputStream fromClient;
-    boolean continuarRodando = false;
+
+    TextView textViewRoomCode;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.waiting_player);
 
-        getRandomCEP();
-        try {
-            Thread.sleep(1500);
-        } catch (InterruptedException e) {
-            e.printStackTrace();
+        Intent intent = this.getIntent();
+        Bundle params = intent.getExtras();
+
+        if (params != null) {
+            ipAddress = params.getString("ip");
+            character = params.getString("character");
         }
-        Intent intent = new Intent(WaitingPlayer.this, Game.class);
-        intent.putExtra("cep-digits", this.cepDigits);
-        intent.putExtra("full-cep", this.cep);
-        startActivity(intent);
-//        ligarServidor();
+
+        textViewRoomCode = findViewById(R.id.textViewRoomCode);
+        textViewRoomCode.setText("Código da sala: " + ipAddress);
+
+        getRandomCEP();
+        connectServer();
     }
 
     private void getRandomCEP() {
@@ -95,12 +102,9 @@ public class WaitingPlayer extends AppCompatActivity {
                 String cidade = respostaJSON.getString("localidade");
                 String bairro = respostaJSON.getString("bairro");
 
-                this.cep = Integer.parseInt(cep.split("-")[0] + cep.split("-")[1]);
-                this.cepDigits = Integer.parseInt(cep.split("-")[1]);
+                this.cep = cep;
 
                 Log.v("[DEBUG]", "CEP = " + cep
-                        + "\nCEP int = " + this.cep
-                        + "\nCEP digit = " + this.cepDigits
                         + "\nLOGRADOURO = " + logradouro
                         + "\nBAIRO = " + bairro
                         + "\nCIDADE = " + cidade);
@@ -110,26 +114,37 @@ public class WaitingPlayer extends AppCompatActivity {
         }
     }
 
-    public void ligarServidor() {
+    public void connectServer() {
         Thread t = new Thread(new Runnable() {
             @Override
             public void run() {
-                ligarServerCodigo();
+                connectServerCode();
             }
         });
         t.start();
     }
 
-    public void ligarServerCodigo() {
-        String result = "";
+    public void connectServerCode() {
         try {
             welcomeSocket = new ServerSocket(9090);
             Socket connectionSocket = welcomeSocket.accept();
 
-            Log.v("PDM", "Device connected");
+            Log.v("[DEBUG]", "Device connected");
 
             fromClient = new DataInputStream(connectionSocket.getInputStream());
             socketOutput = new DataOutputStream(connectionSocket.getOutputStream());
+
+            try {
+                socketOutput.writeUTF("CEP:" + this.cep);
+                if (this.character.equals("Morlock"))
+                    socketOutput.writeUTF("CHARACTER:" + "Eloi");
+                else
+                    socketOutput.writeUTF("CHARACTER:" + "Morlock");
+
+                socketOutput.flush();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
 
             try {
                 Thread.sleep(1500);
@@ -138,52 +153,13 @@ public class WaitingPlayer extends AppCompatActivity {
             }
 
             Intent intent = new Intent(WaitingPlayer.this, Game.class);
-            intent.putExtra("cep-digits", this.cepDigits);
-            intent.putExtra("full-cep", this.cep);
+            intent.putExtra("cep", this.cep);
+            intent.putExtra("character", this.character);
+            intent.putExtra("socket", new SocketHandler(connectionSocket));
             startActivity(intent);
             finish();
-
-//            continuarRodando = true;
-//            while (continuarRodando) {
-//                result = fromClient.readUTF();
-//                if (result.compareTo("PING") == 0) {
-//                    socketOutput.writeUTF("PONG");
-//                    socketOutput.flush();
-//                    atualizarStatus();
-//                }
-//            }
-//
         } catch (Exception ex) {
             ex.printStackTrace();
         }
     }
-
-//    public void atualizarStatus() {
-//        tvNumPìngsPongs.post(new Runnable() {
-//            @Override
-//            public void run() {
-//                tvNumPìngsPongs.setText("Enviados Pings e Pongs");
-//            }
-//        });
-//    }
-
-//    public void mandarPing() {
-//        Thread t = new Thread(new Runnable() {
-//            @Override
-//            public void run() {
-//                try {
-//                    if (socketOutput != null) {
-//                        socketOutput.writeUTF("PING");
-//                        socketOutput.flush();
-//                        atualizarStatus();
-//                    } else {
-//                        tvStatus.setText("Cliente Desconectado");
-//                    }
-//                } catch (IOException e) {
-//                    e.printStackTrace();
-//                }
-//            }
-//        });
-//        t.start();
-//    }
 }
