@@ -27,6 +27,9 @@ import tesky.cep.R;
 
 public class WaitingPlayer extends AppCompatActivity {
     private String cep;
+    String publicPlace;
+    String city;
+    String state;
     String ipAddress;
     String character;
 
@@ -96,17 +99,10 @@ public class WaitingPlayer extends AppCompatActivity {
 
                 JSONObject respostaJSON = arrayCEP.getJSONObject(new Random().nextInt(arrayCEP.length() - 1));
 
-                String cep = respostaJSON.getString("cep");
-                String logradouro = respostaJSON.getString("logradouro");
-                String cidade = respostaJSON.getString("localidade");
-                String bairro = respostaJSON.getString("bairro");
-
-                this.cep = cep;
-
-                Log.v("WaitingPlayer", "CEP = " + cep
-                        + "\nLOGRADOURO = " + logradouro
-                        + "\nBAIRO = " + bairro
-                        + "\nCIDADE = " + cidade);
+                this.cep = respostaJSON.getString("cep");
+                this.publicPlace = respostaJSON.getString("logradouro");
+                this.city = respostaJSON.getString("localidade");
+                this.state = respostaJSON.getString("uf");
             }
         } catch (Exception e) {
             e.printStackTrace();
@@ -135,6 +131,9 @@ public class WaitingPlayer extends AppCompatActivity {
 
             try {
                 socketOutput.writeUTF("CEP:" + this.cep);
+                socketOutput.writeUTF("PUBLIC_PLACE:" + this.publicPlace);
+                socketOutput.writeUTF("CITY:" + this.city);
+                socketOutput.writeUTF("STATE:" + this.state);
                 if (this.character.equals("Morlock"))
                     socketOutput.writeUTF("CHARACTER:" + "Eloi");
                 else
@@ -150,9 +149,12 @@ public class WaitingPlayer extends AppCompatActivity {
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }
-
+//            shutdownServer();
             Intent intent = new Intent(WaitingPlayer.this, Game.class);
             intent.putExtra("cep", this.cep);
+            intent.putExtra("publicPlace", this.publicPlace);
+            intent.putExtra("city", this.city);
+            intent.putExtra("state", this.state);
             intent.putExtra("ip", this.ipAddress);
             intent.putExtra("character", this.character);
             intent.putExtra("type", "server");
@@ -160,6 +162,16 @@ public class WaitingPlayer extends AppCompatActivity {
             finish();
         } catch (Exception ex) {
             ex.printStackTrace();
+        }
+    }
+
+    public void shutdownServer() {
+        try {
+            if (socketOutput != null) {
+                socketOutput.close();
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
         }
     }
 }

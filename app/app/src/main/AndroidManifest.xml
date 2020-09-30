@@ -24,6 +24,7 @@
         <activity android:name=".activity.CreateRoomActivity" />
         <activity android:name=".activity.WaitingPlayer" />
         <activity android:name=".activity.Game" />
+        <activity android:name=".activity.EndGameActivity" />
     </application>
 
 </manifest>

@@ -11,6 +11,7 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
+import java.io.IOException;
 import java.net.Socket;
 
 import tesky.cep.R;
@@ -19,6 +20,9 @@ import tesky.cep.R;
 public class LoginRoomActivity extends AppCompatActivity {
     String cep = null;
     String character = null;
+    String publicPlace;
+    String city;
+    String state;
     Socket clientSocket;
     DataInputStream socketInput;
     DataOutputStream socketOutput;
@@ -68,12 +72,28 @@ public class LoginRoomActivity extends AppCompatActivity {
                             Log.v("ConnectClient", "CHARACTER = " + character);
                         }
 
+                        if (result.contains("PUBLIC_PLACE")) {
+                            publicPlace = result.split(":")[1];
+                        }
+
+                        if (result.contains("CITY")) {
+                            city = result.split(":")[1];
+                        }
+
+                        if (result.contains("STATE")) {
+                            state = result.split(":")[1];
+                        }
+
                         if ((cep != null) && (character != null)) {
+//                            shutdownClient();
                             Intent intent = new Intent(LoginRoomActivity.this, Game.class);
                             intent.putExtra("cep", cep);
                             intent.putExtra("ip", ip);
                             intent.putExtra("character", character);
                             intent.putExtra("type", "client");
+                            intent.putExtra("publicPlace", publicPlace);
+                            intent.putExtra("city", city);
+                            intent.putExtra("state", state);
                             startActivity(intent);
                             finish();
                         }
@@ -84,5 +104,15 @@ public class LoginRoomActivity extends AppCompatActivity {
             }
         });
         t.start();
+    }
+
+    public void shutdownClient() {
+        try {
+            if (socketOutput != null) {
+                socketOutput.close();
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 }

@@ -16,15 +16,10 @@ import android.widget.RadioGroup;
 
 import androidx.appcompat.app.AppCompatActivity;
 
-import java.io.DataOutputStream;
-import java.io.IOException;
-
 import tesky.cep.R;
 
 
 public class CreateRoomActivity extends AppCompatActivity {
-    DataOutputStream socketOutput;
-
     Button buttonCreateMatch;
     RadioButton radioCharacterButton;
     RadioGroup radioCharacterGroup;
@@ -79,16 +74,5 @@ public class CreateRoomActivity extends AppCompatActivity {
                 }
             }
         }
-    }
-
-    public void shutdownServer() {
-        try {
-            if (socketOutput != null) {
-                socketOutput.close();
-            }
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-
     }
 }
